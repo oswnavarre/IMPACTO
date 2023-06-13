@@ -1,17 +1,16 @@
 project:
-  type: book
+  type: website
   
 lang: es 
 language: es.yml
 
-book:
-  title: "Impacto"
-  author: "Oswaldo Navarrete"
-  chapters:
-    - index.qmd
-    - intro.qmd
-    - summary.qmd
-    - references.qmd
+website:
+  title: "IMPACTO"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Inicio
+      - intro.qmd
 
 bibliography: references.bib
 csl: apanoa.csl
@@ -19,3 +18,4 @@ csl: apanoa.csl
 format:
   html:
     theme: earth.scss
+    css: styles.css
