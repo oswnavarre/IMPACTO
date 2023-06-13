@@ -1,0 +1,248 @@
+# Generalidades de la encuesta
+
+```{r include=FALSE}
+library(agricolae)
+library(tidyverse)
+library(writexl)
+library(readxl)
+library(jtools)
+library(plotly)
+library(kableExtra)
+
+orange_earth <- "#f37321"
+
+green_earth <- "#008C99"
+
+datos <- read_excel("datos/data_final.xlsx")
+
+gender <- datos |>
+  group_by(Gender) |> 
+  summarise(
+    N = n(), 
+    Porcentaje = round(100*N/nrow(datos),2)
+  )
+
+gender_country <- datos |>
+  group_by(Gender, Origin_Country) |> 
+  summarise(
+    N = n(), 
+    Porcentaje = round(100*N/nrow(datos),2)
+  ) |>
+  ungroup()
+```
+
+## Datos generales
+
+La encuesta fue aplicada a `r nrow(datos)` personas. `r gender[1,2]` del total, es decir un `r gender[1,3]`% corresponden al género femenino y un `r gender[2,3]`% al género masculino. En la @fig-country se observa la distribución de los encuestados por país. En cuanto a la distribución por país y por género, en la @fig-countrygdr se puede observar esta distribución. 
+
+```{r}
+#| label: fig-country
+#| fig-cap: "Distribución de los participantes por país"
+#| echo: false
+
+country <- datos |>
+  group_by(Origin_Country) |> 
+  summarise(
+    N = n(), 
+    Porcentaje = round(100*N/nrow(datos),2)
+  )
+
+g2 <- country |>
+  mutate(Origin_Country = fct_reorder(Origin_Country, N)) |>
+  ggplot( aes(x = Origin_Country, y = N)) +
+  geom_bar(stat = "identity", fill = orange_earth) +
+  coord_flip() + 
+  theme_apa() +
+  labs(
+    x = "País", y = "Frecuencia"
+  )
+ggplotly(g2)
+
+```
+
+
+
+```{r}
+#| label: fig-countrygdr
+#| fig-cap: "Distribución de los participantes por país y por género"
+#| echo: false
+
+g1 <- gender_country |>
+  mutate(Origin_Country = fct_reorder(Origin_Country, Porcentaje)) |>
+  ggplot(aes(fill=Gender, y=Porcentaje, x=Origin_Country)) + 
+  geom_bar(position="stack", stat="identity" ) +
+  labs(x = "País de Origen", y = "Porcentaje") +
+  scale_fill_discrete(name = "Género") +
+  coord_flip() +
+  theme_apa() 
+
+ggplotly(g1) |> layout(legend = list(x = 0.70, y = 0.10))
+```
+
+## Nivel de Estudios
+
+```{r}
+#| echo: false
+#| message: false
+
+datos <- datos |>
+  mutate(
+    StudyLevel2 = fct_recode(StudyLevel, "Doctorado" = "Doctorado",
+                             "Licenciatura" = "Licenciatura",
+                             "Maestría" = "Maestría",
+                             "Otro" = "Otro (especificar): - cursando Doctorado",
+                             "Otro" = "Otro (especificar): - Cannabis Industry Specialization",
+                             "Otro" = "Otro (especificar): - Postgraduado en Manejo de Recursos Naturales",
+                             "Otro" = "Otro (especificar): - Especialidad Desarrollo Local",
+                             "Otro" = "Otro (especificar): - Diplomado",
+                             "Otro" = "Otro (especificar): - Especialización"),
+    StudyLevel2 = fct_relevel(StudyLevel2, "Licenciatura","Maestría", "Doctorado","Otro")
+  ) 
+
+
+
+studylvl <- datos |>
+  group_by(StudyLevel2) |> 
+  summarise(
+    N = n(), 
+    Porcentaje = round(100*N/nrow(datos),2)
+  )
+
+
+g3 <-  studylvl |>
+  mutate(StudyLevel2 = fct_rev(StudyLevel2)) |>
+  ggplot(aes(x = StudyLevel2, y = Porcentaje)) +
+  geom_bar(stat = "identity",fill = green_earth) +
+  labs(x = "Nivel de Estudios", y = "Porcentaje") +
+  theme_apa() +
+  coord_flip()
+
+
+studylvl_gdr <- datos |>
+  group_by(StudyLevel2, Gender) |> 
+  summarise(
+    N = n(), 
+    Porcentaje = round(100*N/nrow(datos),2)
+  ) |>
+  ungroup()
+
+g4 <- studylvl_gdr |>
+  mutate(StudyLevel2 = fct_rev(StudyLevel2)) |>
+  ggplot( aes(x = StudyLevel2, y = Porcentaje, fill = Gender)) +
+  geom_bar(stat = "identity") +
+  scale_fill_discrete(name = "Género") +
+  coord_flip() + 
+  theme_apa() +
+  labs(x = "Nivel de Estudios", y = "Porcentaje") +
+  theme(legend.position = c(0.75, 0.15))
+
+
+```
+
+```{r}
+#| label: fig-studylvl
+#| fig-cap: "Nivel de Estudios"
+#| echo: false
+
+
+ggplotly(g3)
+```
+
+```{r}
+#| label: fig-studylvlgdr
+#| fig-cap: "Nivel de Estudios por Género"
+#| echo: false
+
+
+ggplotly(g4) |> layout(legend = list(x = 0.80, y = 0.10))
+```
+
+## Trabajo
+
+```{r}
+#| echo: false
+#| message: false
+
+work <- datos |>
+  group_by(Work) |> 
+  summarise(
+    N = n(), 
+    Porcentaje = round(100*N/nrow(datos),2)
+  )
+
+g05_0 <- ggplot(work, aes(x= Work , y = Porcentaje, fill = Work) ) +
+  geom_bar(stat = "identity", position = "dodge") +
+  theme_apa() + 
+  labs(x = "Trabaja", y = "Porcentaje (%)") +
+  theme(legend.position = "none") 
+
+work_gdr <- datos |>
+  group_by(Work, Gender) |> 
+  summarise(
+    N = n(), 
+    Porcentaje = round(100*N/nrow(datos),2)
+  )
+
+g05 <- ggplot(work_gdr, aes(x= Work , fill = Gender, y = Porcentaje) ) +
+  geom_bar(stat = "identity", position = "dodge") +
+  theme_apa() + 
+  labs(x = "Trabaja", y = "Porcentaje (%)") +
+  scale_fill_discrete(name = "Género") +
+  theme(legend.position = "bottom")
+```
+
+
+```{r}
+#| label: fig-work
+#| fig-cap: "¿Se encuentra actualmente trabajando?"
+#| echo: false
+
+
+ggplotly(g05_0)
+```
+
+```{r}
+#| label: fig-workgdr
+#| fig-cap: "Distribución de Trabajo por Género"
+#| echo: false
+
+
+ggplotly(g05) |> layout(legend = list(x = 0.10, y = 0.80))
+```
+
+### Actividad Principal
+
+```{r}
+#| echo: false
+#| message: false
+
+datos <- datos |>
+  mutate(
+    Principal_Activity = str_remove(Principal_Activity, " \\(incluir trabajo independiente\\)")
+  )
+
+prin_acti <- datos |>
+  group_by(Principal_Activity) |>
+  summarise(
+    N = n(),
+    Porcentaje = round(100*N/nrow(datos),2)
+  )
+
+g06 <- prin_acti |>
+  mutate(Principal_Activity = fct_reorder(Principal_Activity, N)) |>
+  ggplot(aes(x= Principal_Activity , fill = Principal_Activity, y = Porcentaje) ) +
+  geom_bar(stat = "identity", position = "dodge") +
+  theme_apa() + 
+  labs(x = "", y = "Porcentaje (%)") +
+  theme(legend.position = "none") +
+  coord_flip()
+```
+
+```{r}
+#| label: fig-princ_acti
+#| fig-cap: "Actividad Principal"
+#| echo: false
+
+ggplotly(g06)
+```
+
