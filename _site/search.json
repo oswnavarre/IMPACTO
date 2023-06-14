@@ -1,24 +1,17 @@
 [
   {
-    "objectID": "documento.html",
-    "href": "documento.html",
-    "title": "Encuesta de Impacto",
+    "objectID": "first_work.html",
+    "href": "first_work.html",
+    "title": "Primer trabajo",
     "section": "",
-    "text": "La encuesta fue aplicada a 274 personas. 123 del total, es decir un 44.89% corresponden al género femenino y un 55.11% al género masculino. En la Figura 1 se observa la distribución de los encuestados por país. En cuanto a la distribución por país y por género, en la Figura 2 se puede observar esta distribución.\n\n\n\n\n\nFigura 1: Distribución de los participantes por país\n\n\n\n\n\n\n\n\nFigura 2: Distribución de los participantes por país y por género"
+    "text": "Primera actividad\n\n\n\n\n\n\nPrimera actividad por Género\n\n\n\n\n\n\nPrimera actividad por Nivel de Estudios\n\n\n\n\n\n\nCoincidencia del primer trabajo\n\n\n\n\n\n\nCoincidencia del primer trabajo por género\n\n\n\n\n\n\nCoincidencia del primer trabajo por género\n\n\n\n\n\n\nTiempo en conseguir su primer trabajo\n\n\n\n\n\n\nTiempo en conseguir su primer trabajo por género\n\n\n\n\n\n\nTiempo en conseguir su primer trabajo por Nivel de Estudios\n\n\n\n\n\n\nPrimer país en trabajar\n\n\n\n\n\n\nPrimer país en trabajar por género\n\n\n\n\n\n\nPrimer país en trabajar por nivel de estudios\n\n\n\n\n\n\n\n\nOtro país\n\n\n\n\n\n\nOtro país por género\n\n\n\n\n\n\nOtro país por nivel de estudios"
   },
   {
-    "objectID": "documento.html#datos-generales",
-    "href": "documento.html#datos-generales",
-    "title": "Encuesta de Impacto",
+    "objectID": "first_work.html#dónde",
+    "href": "first_work.html#dónde",
+    "title": "Primer trabajo",
     "section": "",
-    "text": "La encuesta fue aplicada a 274 personas. 123 del total, es decir un 44.89% corresponden al género femenino y un 55.11% al género masculino. En la Figura 1 se observa la distribución de los encuestados por país. En cuanto a la distribución por país y por género, en la Figura 2 se puede observar esta distribución.\n\n\n\n\n\nFigura 1: Distribución de los participantes por país\n\n\n\n\n\n\n\n\nFigura 2: Distribución de los participantes por país y por género"
-  },
-  {
-    "objectID": "documento.html#nivel-de-estudios",
-    "href": "documento.html#nivel-de-estudios",
-    "title": "Encuesta de Impacto",
-    "section": "Nivel de Estudios",
-    "text": "Nivel de Estudios"
+    "text": "Otro país\n\n\n\n\n\n\nOtro país por género\n\n\n\n\n\n\nOtro país por nivel de estudios"
   },
   {
     "objectID": "index.html",
@@ -30,30 +23,51 @@
   {
     "objectID": "intro.html",
     "href": "intro.html",
-    "title": "Generalidades de la encuesta",
+    "title": "Generalidades",
     "section": "",
-    "text": "La encuesta fue aplicada a 274 personas. 123 del total, es decir un 44.89% corresponden al género femenino y un 55.11% al género masculino. En la Figura 1 se observa la distribución de los encuestados por país. En cuanto a la distribución por país y por género, en la Figura 2 se puede observar esta distribución.\n\n\n\n\n\nFigura 1: Distribución de los participantes por país\n\n\n\n\n\n\n\n\nFigura 2: Distribución de los participantes por país y por género\n\n\n\n\n\n\n\n\n\n\n\nFigura 3: Nivel de Estudios\n\n\n\n\n\n\n\n\nFigura 4: Nivel de Estudios por Género\n\n\n\n\n\n\n\n\n\n\n\nFigura 5: ¿Se encuentra actualmente trabajando?\n\n\n\n\n\n\n\n\nFigura 6: Distribución de Trabajo por Género\n\n\n\n\n\n\n\n\n\n\nFigura 7: Actividad Principal"
+    "text": "La encuesta fue aplicada a 274 personas. 123 del total, es decir un 44.89% corresponden al género femenino y un 55.11% al género masculino. En la Figura 1 se observa la distribución de los encuestados por país. En cuanto a la distribución por país y por género, en la Figura 2 se puede observar esta distribución.\n\n\n\n\n\nFigura 1: Distribución de los participantes por país\n\n\n\n\n\n\n\n\nFigura 2: Distribución de los participantes por país y por género\n\n\n\n\n\n\n\n\n\n\n\nFigura 3: Nivel de Estudios\n\n\n\n\n\n\n\n\nFigura 4: Nivel de Estudios por Género\n\n\n\n\n\n\n\n\n\n\n\nFigura 5: ¿Se encuentra actualmente trabajando?\n\n\n\n\n\n\n\n\nFigura 6: Distribución de Trabajo por Género\n\n\n\n\n\n\n\n\n\n\nFigura 7: Actividad Principal\n\n\n\n\n\n\n\n\nFigura 8: Actividad Principal por Condición laboral\n\n\n\n\n\n\n\n\nFigura 9: Actividad Principal por Nivel de Estudios\n\n\n\n\n\n\n\n\nFigura 10: Satisfacción Trabajo Actual\n\n\n\n\n\n\n\n\nFigura 11: Satisfacción Trabajo Actual por Género\n\n\n\n\n\n\n\n\nFigura 12: Satisfacción Trabajo Actual por Nivel de Estudios"
   },
   {
     "objectID": "intro.html#datos-generales",
     "href": "intro.html#datos-generales",
-    "title": "Generalidades de la encuesta",
+    "title": "Generalidades",
     "section": "",
     "text": "La encuesta fue aplicada a 274 personas. 123 del total, es decir un 44.89% corresponden al género femenino y un 55.11% al género masculino. En la Figura 1 se observa la distribución de los encuestados por país. En cuanto a la distribución por país y por género, en la Figura 2 se puede observar esta distribución.\n\n\n\n\n\nFigura 1: Distribución de los participantes por país\n\n\n\n\n\n\n\n\nFigura 2: Distribución de los participantes por país y por género"
   },
   {
     "objectID": "intro.html#nivel-de-estudios",
     "href": "intro.html#nivel-de-estudios",
-    "title": "Generalidades de la encuesta",
+    "title": "Generalidades",
     "section": "",
     "text": "Figura 3: Nivel de Estudios\n\n\n\n\n\n\n\n\nFigura 4: Nivel de Estudios por Género"
   },
   {
     "objectID": "intro.html#trabajo",
     "href": "intro.html#trabajo",
-    "title": "Generalidades de la encuesta",
+    "title": "Generalidades",
     "section": "",
-    "text": "Figura 5: ¿Se encuentra actualmente trabajando?\n\n\n\n\n\n\n\n\nFigura 6: Distribución de Trabajo por Género\n\n\n\n\n\n\n\n\n\n\nFigura 7: Actividad Principal"
+    "text": "Figura 5: ¿Se encuentra actualmente trabajando?\n\n\n\n\n\n\n\n\nFigura 6: Distribución de Trabajo por Género\n\n\n\n\n\n\n\n\n\n\nFigura 7: Actividad Principal\n\n\n\n\n\n\n\n\nFigura 8: Actividad Principal por Condición laboral\n\n\n\n\n\n\n\n\nFigura 9: Actividad Principal por Nivel de Estudios\n\n\n\n\n\n\n\n\nFigura 10: Satisfacción Trabajo Actual\n\n\n\n\n\n\n\n\nFigura 11: Satisfacción Trabajo Actual por Género\n\n\n\n\n\n\n\n\nFigura 12: Satisfacción Trabajo Actual por Nivel de Estudios"
+  },
+  {
+    "objectID": "presentacion.html#generalidades",
+    "href": "presentacion.html#generalidades",
+    "title": "Encuesta de Impacto",
+    "section": "Generalidades",
+    "text": "Generalidades\n\nLa encuesta fue aplicada a 274 personas.\n123 del total, es decir un 44.89% corresponden al género femenino y un 55.11% al género masculino."
+  },
+  {
+    "objectID": "presentacion.html#encuestados-por-país",
+    "href": "presentacion.html#encuestados-por-país",
+    "title": "Encuesta de Impacto",
+    "section": "Encuestados por país",
+    "text": "Encuestados por país\n\n\n\n\n\nFigura 1: Distribución de los participantes por país"
+  },
+  {
+    "objectID": "presentacion.html#encuestados-por-país-y-por-género",
+    "href": "presentacion.html#encuestados-por-país-y-por-género",
+    "title": "Encuesta de Impacto",
+    "section": "Encuestados por país y por género",
+    "text": "Encuestados por país y por género\n\n\n\n\n\nFigura 2: Distribución de los participantes por país y por género"
   },
   {
     "objectID": "references.html",

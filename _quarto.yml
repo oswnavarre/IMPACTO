@@ -11,6 +11,8 @@ website:
       - href: index.qmd
         text: Inicio
       - intro.qmd
+      - first_work.qmd
+      - impact.qmd
 
 bibliography: references.bib
 csl: apanoa.csl

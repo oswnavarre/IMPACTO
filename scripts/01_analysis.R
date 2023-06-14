@@ -299,7 +299,6 @@ first_work <- datos |>
                             "Otro")
   )
 
-unique(first_work$FirstActivity)
 
 firstact <- first_work |>
   select(Gender, StudyLevel2, FirstActivity) |>
@@ -577,11 +576,13 @@ whatcountryfirst_gdr <- firstcountrywhat |>
   summarise(
     N = n(),
     Porcentaje = round(100*N/nrow(firstcountrywhat),2)
-  )
+  ) |>
+  ungroup()
 
 
 g025 <-  whatcountryfirst_gdr |>
-  mutate(WhatCountryFirst = fct_reorder(WhatCountryFirst, firstcountrywhat$Porcentaje)) 
+  mutate(WhatCountryFirst = fct_reorder(WhatCountryFirst, N)) |>
+  arrange(desc(N))
 
 g025 <- ggplot(whatcountryfirst_gdr,aes(x= WhatCountryFirst ,y = Porcentaje, fill = Gender) ) +
   geom_bar(stat = "identity", position = "stack") +

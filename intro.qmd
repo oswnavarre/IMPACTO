@@ -1,4 +1,4 @@
-# Generalidades de la encuesta
+# Generalidades
 
 ```{r include=FALSE}
 library(agricolae)
@@ -14,6 +14,26 @@ orange_earth <- "#f37321"
 green_earth <- "#008C99"
 
 datos <- read_excel("datos/data_final.xlsx")
+
+datos <- datos |>
+  mutate(
+    StudyLevel2 = fct_recode(StudyLevel, "Doctorado" = "Doctorado",
+                             "Licenciatura" = "Licenciatura",
+                             "Maestría" = "Maestría",
+                             "Otro" = "Otro (especificar): - cursando Doctorado",
+                             "Otro" = "Otro (especificar): - Cannabis Industry Specialization",
+                             "Otro" = "Otro (especificar): - Postgraduado en Manejo de Recursos Naturales",
+                             "Otro" = "Otro (especificar): - Especialidad Desarrollo Local",
+                             "Otro" = "Otro (especificar): - Diplomado",
+                             "Otro" = "Otro (especificar): - Especialización"),
+    StudyLevel2 = fct_relevel(StudyLevel2, "Licenciatura","Maestría", "Doctorado","Otro")
+  ) 
+
+datos <- datos |>
+  mutate(
+    Principal_Activity = str_remove(Principal_Activity, " \\(incluir trabajo independiente\\)")
+  )
+
 
 gender <- datos |>
   group_by(Gender) |> 
@@ -60,8 +80,6 @@ ggplotly(g2)
 
 ```
 
-
-
 ```{r}
 #| label: fig-countrygdr
 #| fig-cap: "Distribución de los participantes por país y por género"
@@ -84,20 +102,6 @@ ggplotly(g1) |> layout(legend = list(x = 0.70, y = 0.10))
 ```{r}
 #| echo: false
 #| message: false
-
-datos <- datos |>
-  mutate(
-    StudyLevel2 = fct_recode(StudyLevel, "Doctorado" = "Doctorado",
-                             "Licenciatura" = "Licenciatura",
-                             "Maestría" = "Maestría",
-                             "Otro" = "Otro (especificar): - cursando Doctorado",
-                             "Otro" = "Otro (especificar): - Cannabis Industry Specialization",
-                             "Otro" = "Otro (especificar): - Postgraduado en Manejo de Recursos Naturales",
-                             "Otro" = "Otro (especificar): - Especialidad Desarrollo Local",
-                             "Otro" = "Otro (especificar): - Diplomado",
-                             "Otro" = "Otro (especificar): - Especialización"),
-    StudyLevel2 = fct_relevel(StudyLevel2, "Licenciatura","Maestría", "Doctorado","Otro")
-  ) 
 
 
 
@@ -191,7 +195,6 @@ g05 <- ggplot(work_gdr, aes(x= Work , fill = Gender, y = Porcentaje) ) +
   theme(legend.position = "bottom")
 ```
 
-
 ```{r}
 #| label: fig-work
 #| fig-cap: "¿Se encuentra actualmente trabajando?"
@@ -216,10 +219,6 @@ ggplotly(g05) |> layout(legend = list(x = 0.10, y = 0.80))
 #| echo: false
 #| message: false
 
-datos <- datos |>
-  mutate(
-    Principal_Activity = str_remove(Principal_Activity, " \\(incluir trabajo independiente\\)")
-  )
 
 prin_acti <- datos |>
   group_by(Principal_Activity) |>
@@ -244,5 +243,155 @@ g06 <- prin_acti |>
 #| echo: false
 
 ggplotly(g06)
+```
+
+```{r}
+#| echo: false
+#| message: false
+#| label: fig-workprincati
+#| fig-cap: "Actividad Principal por Condición laboral"
+
+work_prin_acti <- datos |>
+  group_by(Work, Principal_Activity) |>
+  summarise(
+    N = n(),
+    Porcentaje = round(100*N/nrow(datos),2)
+  )
+
+g07 <- work_prin_acti |>
+  mutate(Principal_Activity = fct_reorder(Principal_Activity, N)) |>
+  ggplot(aes(x= Principal_Activity , fill = Work, y = Porcentaje) ) +
+  geom_bar(stat = "identity", position = "dodge") +
+  theme_apa() + 
+  labs(x = "", y = "Porcentaje (%)") +
+  theme(legend.position = "bottom") +
+  scale_fill_discrete(name = "Trabaja") +
+  coord_flip()
+
+ggplotly(g07) |> layout(legend = list(x = 0.70, y = 0.10))
+```
+
+```{r}
+#| echo: false
+#| message: false
+#| label: fig-stdlvl_actprinc
+#| fig-cap: "Actividad Principal por Nivel de Estudios"
+
+studyl_prin_acti <- datos |>
+  group_by(StudyLevel2, Principal_Activity) |>
+  summarise(
+    N = n(),
+    Porcentaje = round(100*N/nrow(datos),2)
+  )
+
+g08 <- studyl_prin_acti |>
+  mutate(Principal_Activity = fct_reorder(Principal_Activity, N)) |>
+  ggplot(aes(x= Principal_Activity , fill = StudyLevel2, y = Porcentaje) ) +
+  geom_bar(stat = "identity", position = "dodge") +
+  theme_apa() + 
+  labs(x = "", y = "Porcentaje (%)") +
+  theme(legend.position = "bottom") +
+  scale_fill_discrete(name = "Nivel de Estudios") +
+  coord_flip()
+ggplotly(g08) |> layout(legend = list(x = 0.70, y = 0.10))
+```
+
+```{r}
+#| echo: false
+#| message: false
+#| label: fig-currentwork
+#| fig-cap: "Satisfacción Trabajo Actual"
+
+current_work <- datos |>
+  select(c(1,142,17:22)) |>
+  drop_na()
+
+current_work_long <- current_work |>
+  pivot_longer(
+    3:8,
+    names_to = "Variable",
+    values_to = "Score"
+  ) |>
+  mutate(
+    Score = as_factor(Score),
+    Variable = case_when(Variable == "OpportunitiesWork" ~ "Oportunidades",
+                         Variable == "SatisfiedWork" ~ "Satisfacción",
+                         Variable == "SignificativeWork" ~ "Significativo",
+                         Variable == "SocietyWork" ~ "Sociedad",
+                         Variable == "SufficientPayment" ~ "Pago",
+                         Variable == "CoincidentWork" ~ "Coincidente"),
+    Variable = fct_relevel(Variable, "Significativo", "Coincidente" ,"Sociedad", 
+                           "Satisfacción", "Oportunidades", "Pago")
+  ) 
+  
+
+stats_current_work_long <- current_work_long |>
+  group_by(Variable, Score) |>
+  summarise(
+    N = n()
+  ) |>
+  mutate(
+    Porcentaje = round(100*N/sum(N),2)
+  )
+
+g09 <- stats_current_work_long |>
+  mutate(Variable = fct_rev(Variable)) |>
+  ggplot(aes(x = Variable, y = Porcentaje, fill = Score))  +
+  geom_bar(position = "stack", stat = "identity") + 
+  coord_flip() +
+  theme_apa()
+ggplotly(g09)
+
+stats_current_work_long_gdr <- current_work_long |>
+  group_by(Variable, Gender, Score) |>
+  summarise(
+    N = n()
+  ) |>
+  mutate(
+    Porcentaje = round(100*N/sum(N),2)
+  )
+
+g010 <- stats_current_work_long_gdr |>
+  mutate(Variable = fct_rev(Variable)) |>
+  ggplot(aes(x = Variable, y = Porcentaje, fill = Score))  +
+  geom_bar(position = "stack", stat = "identity") + 
+  coord_flip() +
+  facet_wrap(. ~ Gender) +
+  theme_apa()
+
+stats_current_work_long_stlev <- current_work_long |>
+  group_by(Variable, StudyLevel2, Score) |>
+  summarise(
+    N = n()
+  ) |>
+  mutate(
+    Porcentaje = round(100*N/sum(N),2)
+  )
+
+g011 <- stats_current_work_long_stlev |>
+  mutate(Variable = fct_rev(Variable)) |>
+  ggplot(aes(x = Variable, y = Porcentaje, fill = Score))  +
+  geom_bar(position = "stack", stat = "identity") + 
+  coord_flip() +
+  facet_grid(. ~ StudyLevel2) +
+  theme_apa()
+```
+
+```{r}
+#| echo: false
+#| message: false
+#| label: fig-currentworkgdr
+#| fig-cap: "Satisfacción Trabajo Actual por Género"
+
+ggplotly(g010)
+```
+
+```{r}
+#| echo: false
+#| message: false
+#| label: fig-currentworkstdlvl
+#| fig-cap: "Satisfacción Trabajo Actual por Nivel de Estudios"
+
+ggplotly(g011)
 ```
 

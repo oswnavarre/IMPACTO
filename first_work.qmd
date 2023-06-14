@@ -1,0 +1,507 @@
+# Primer trabajo
+
+```{r include=FALSE}
+library(agricolae)
+library(tidyverse)
+library(writexl)
+library(readxl)
+library(jtools)
+library(plotly)
+library(kableExtra)
+
+orange_earth <- "#f37321"
+
+green_earth <- "#008C99"
+
+datos <- read_excel("datos/data_final.xlsx")
+
+datos <- datos |>
+  mutate(
+    StudyLevel2 = fct_recode(StudyLevel, "Doctorado" = "Doctorado",
+                             "Licenciatura" = "Licenciatura",
+                             "Maestría" = "Maestría",
+                             "Otro" = "Otro (especificar): - cursando Doctorado",
+                             "Otro" = "Otro (especificar): - Cannabis Industry Specialization",
+                             "Otro" = "Otro (especificar): - Postgraduado en Manejo de Recursos Naturales",
+                             "Otro" = "Otro (especificar): - Especialidad Desarrollo Local",
+                             "Otro" = "Otro (especificar): - Diplomado",
+                             "Otro" = "Otro (especificar): - Especialización"),
+    StudyLevel2 = fct_relevel(StudyLevel2, "Licenciatura","Maestría", "Doctorado","Otro")
+  ) 
+
+datos <- datos |>
+  mutate(
+    Principal_Activity = str_remove(Principal_Activity, " \\(incluir trabajo independiente\\)")
+  )
+
+
+gender <- datos |>
+  group_by(Gender) |> 
+  summarise(
+    N = n(), 
+    Porcentaje = round(100*N/nrow(datos),2)
+  )
+
+gender_country <- datos |>
+  group_by(Gender, Origin_Country) |> 
+  summarise(
+    N = n(), 
+    Porcentaje = round(100*N/nrow(datos),2)
+  ) |>
+  ungroup()
+```
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+
+first_work <- datos |>
+  select(c(1,142,23:27)) |>
+  mutate(
+    FirstActivity = str_remove(FirstActivity, " \\(incluir trabajo independiente\\)")
+  ) |>
+  mutate(
+    FirstActivity = if_else(FirstActivity %in% c("Estudios de posgrado",
+                                                 "Trabajando de tiempo completo",
+                                                 "Pasantía",
+                                                 "Trabajando a tiempo parcial",
+                                                 NA),
+                            FirstActivity,
+                            "Otro")
+  )
+
+firstact <- first_work |>
+  select(Gender, StudyLevel2, FirstActivity) |>
+  drop_na()
+
+firstact_all <- firstact |>
+  group_by(FirstActivity) |>
+  summarise(
+    N = n(),
+    Porcentaje = round(100*N/nrow(firstact),2)
+  )
+
+g012 <-  firstact_all |>
+  mutate(FirstActivity = fct_reorder(FirstActivity, N)) |>
+  ggplot(aes(x= FirstActivity ,y = Porcentaje, fill = FirstActivity) ) +
+  geom_bar(stat = "identity", position = "dodge") +
+  theme_apa() + 
+  labs(x = "", y = "Porcentaje (%)") +
+  theme(legend.position = "none") +
+  coord_flip()
+
+firstact_gdr <- firstact |>
+  group_by(Gender, FirstActivity) |>
+  summarise(
+    N = n(),
+    Porcentaje = round(100*N/nrow(firstact),2)
+  )
+
+
+g013 <-  firstact_gdr |>
+  mutate(FirstActivity = fct_reorder(FirstActivity, N)) |>
+  ggplot(aes(x= FirstActivity ,y = Porcentaje, fill = Gender) ) +
+  geom_bar(stat = "identity", position = "stack") +
+  theme_apa() + 
+  labs(x = "", y = "Porcentaje (%)") +
+  theme(legend.position = "bottom") +
+  scale_fill_discrete(name = "Género") + 
+  coord_flip() 
+
+firstact_lvl <- firstact |>
+  group_by(StudyLevel2, FirstActivity) |>
+  summarise(
+    N = n(),
+    Porcentaje = round(100*N/nrow(firstact),2)
+  )
+
+g014 <-  firstact_lvl |>
+  mutate(FirstActivity = fct_reorder(FirstActivity, N)) |>
+  ggplot(aes(x= FirstActivity ,y = Porcentaje, fill = StudyLevel2) ) +
+  geom_bar(stat = "identity", position = "stack") +
+  theme_apa() + 
+  labs(x = "", y = "Porcentaje (%)") +
+  theme(legend.position = "bottom") +
+  scale_fill_discrete(name = "Nivel de Estudios") +
+  coord_flip() 
+
+firstcoincident <- first_work |>
+  select(Gender, StudyLevel2, CoincidentFirst) |>
+  mutate(CoincidentFirst = fct_relevel(CoincidentFirst, "Nula coincidencia",
+                                       "Baja coincidencia", "Mediana coincidencia",
+                                       "Total coincidencia")) |>
+  drop_na()
+
+firstcoincident_all <- firstcoincident |>
+  group_by(CoincidentFirst) |>
+  summarise(
+    N = n(),
+    Porcentaje = round(100*N/nrow(firstcoincident),2)
+  )
+
+g015 <-  firstcoincident_all |>
+  mutate(CoincidentFirst = fct_reorder(CoincidentFirst, N)) |>
+  ggplot(aes(x= CoincidentFirst ,y = Porcentaje, fill = CoincidentFirst) ) +
+  geom_bar(stat = "identity", position = "dodge") +
+  theme_apa() + 
+  labs(x = "", y = "Porcentaje (%)") +
+  theme(legend.position = "none") +
+  coord_flip()
+
+firstcoincident_gdr <- firstcoincident|>
+  group_by(Gender, CoincidentFirst) |>
+  summarise(
+    N = n(),
+    Porcentaje = round(100*N/nrow(firstcoincident),2)
+  )
+
+g016 <-  firstcoincident_gdr |>
+  mutate(CoincidentFirst = fct_reorder(CoincidentFirst, N)) |>
+  ggplot(aes(x= CoincidentFirst ,y = Porcentaje, fill = Gender) ) +
+  geom_bar(stat = "identity", position = "stack") +
+  theme_apa() + 
+  labs(x = "", y = "Porcentaje (%)") +
+  theme(legend.position = "bottom") +
+  scale_fill_discrete(name = "Género") +
+  coord_flip() 
+
+firstcoincident_lvl <- firstcoincident |>
+  group_by(StudyLevel2, CoincidentFirst) |>
+  summarise(
+    N = n(),
+    Porcentaje = round(100*N/nrow(firstcoincident),2)
+  )
+
+g017 <-  firstcoincident_lvl |>
+  mutate(CoincidentFirst = fct_reorder(CoincidentFirst, N)) |>
+  ggplot(aes(x= CoincidentFirst ,y = Porcentaje, fill = StudyLevel2) ) +
+  geom_bar(stat = "identity", position = "stack") +
+  theme_apa() + 
+  labs(x = "", y = "Porcentaje (%)") +
+  theme(legend.position = "bottom") +
+  scale_fill_discrete(name = "Nivel de Estudios") +
+  coord_flip() 
+
+time_firstact <- first_work |>
+  select(Gender, StudyLevel2, TimeFirstActivity) |>
+  mutate(TimeFirstActivity = fct_relevel(TimeFirstActivity, "0-3 meses",
+                                       "4-6 meses", "7-12 meses",
+                                       "1-2 años", "Más de 2 años")) |>
+  drop_na()
+
+firsttime_all <- time_firstact |>
+  group_by(TimeFirstActivity) |>
+  summarise(
+    N = n(),
+    Porcentaje = round(100*N/nrow(time_firstact),2)
+  )
+
+g018 <-  firsttime_all |>
+  mutate(TimeFirstActivity = fct_reorder(TimeFirstActivity, N)) |>
+  ggplot(aes(x= TimeFirstActivity ,y = Porcentaje, fill = TimeFirstActivity) ) +
+  geom_bar(stat = "identity", position = "dodge") +
+  theme_apa() + 
+  labs(x = "", y = "Porcentaje (%)") +
+  theme(legend.position = "none") +
+  coord_flip()
+
+firsttime_gdr <- time_firstact|>
+  group_by(Gender, TimeFirstActivity) |>
+  summarise(
+    N = n(),
+    Porcentaje = round(100*N/nrow(time_firstact),2)
+  )
+
+g019 <-  firsttime_gdr |>
+  mutate(TimeFirstActivity = fct_reorder(TimeFirstActivity, N)) |>
+  ggplot(aes(x= TimeFirstActivity ,y = Porcentaje, fill = Gender) ) +
+  geom_bar(stat = "identity", position = "stack") +
+  theme_apa() + 
+  labs(x = "", y = "Porcentaje (%)") +
+  theme(legend.position = "bottom") +
+  scale_fill_discrete(name = "Género") +
+  coord_flip() 
+
+firsttime_lvl <- time_firstact |>
+  group_by(StudyLevel2, TimeFirstActivity) |>
+  summarise(
+    N = n(),
+    Porcentaje = round(100*N/nrow(time_firstact),2)
+  )
+
+
+g020 <-  firsttime_lvl |>
+  mutate(TimeFirstActivity = fct_rev(TimeFirstActivity)) |>
+  ggplot(aes(x= TimeFirstActivity ,y = Porcentaje, fill = StudyLevel2) ) +
+  geom_bar(stat = "identity", position = "stack") +
+  theme_apa() + 
+  labs(x = "", y = "Porcentaje (%)") +
+  theme(legend.position = "bottom") +
+  scale_fill_discrete(name = "Nivel de Estudios") +
+  coord_flip() 
+
+firstcountry <- first_work |>
+  select(Gender, StudyLevel2, CountryFirst) |>
+  drop_na()
+
+firstcountry_all <- firstcountry |>
+  group_by(CountryFirst) |>
+  summarise(
+    N = n(),
+    Porcentaje = round(100*N/nrow(firstcountry),2)
+  )
+
+g021 <-  firstcountry_all |>
+  mutate(CountryFirst = fct_reorder(CountryFirst, N)) |>
+  ggplot(aes(x= CountryFirst ,y = Porcentaje, fill = CountryFirst) ) +
+  geom_bar(stat = "identity", position = "dodge") +
+  theme_apa() + 
+  labs(x = "", y = "Porcentaje (%)") +
+  theme(legend.position = "none") +
+  coord_flip()
+
+countryfirst_gdr <- firstcountry |>
+  group_by(Gender, CountryFirst) |>
+  summarise(
+    N = n(),
+    Porcentaje = round(100*N/nrow(firstcountry),2)
+  )
+
+
+g022 <-  countryfirst_gdr |>
+  mutate(CountryFirst = fct_reorder(CountryFirst, N)) |>
+  ggplot(aes(x= CountryFirst ,y = Porcentaje, fill = Gender) ) +
+  geom_bar(stat = "identity", position = "stack") +
+  theme_apa() + 
+  labs(x = "", y = "Porcentaje (%)") +
+  theme(legend.position = "bottom") +
+  scale_fill_discrete(name = "Género") +
+  coord_flip() 
+
+countryfirst_lvl <- firstcountry |>
+  group_by(StudyLevel2, CountryFirst) |>
+  summarise(
+    N = n(),
+    Porcentaje = round(100*N/nrow(firstcountry),2)
+  )
+
+
+g023 <-  countryfirst_lvl |>
+  ggplot(aes(x= CountryFirst ,y = Porcentaje, fill = StudyLevel2) ) +
+  geom_bar(stat = "identity", position = "stack") +
+  theme_apa() + 
+  labs(x = "", y = "Porcentaje (%)") +
+  theme(legend.position = "bottom") +
+  scale_fill_discrete(name = "Nivel de estudios") +
+  coord_flip() 
+```
+
+```{r}
+#| fig-cap: Primera actividad
+#| label: firstact
+#| echo: false
+#| message: false
+
+ggplotly(g012)
+```
+
+```{r}
+#| fig-cap: Primera actividad por Género
+#| label: firstact_gender
+#| echo: false
+#| message: false
+
+ggplotly(g013) |> layout(legend = list(x = 0.70, y = 0.10))
+```
+
+```{r}
+#| fig-cap: Primera actividad por Nivel de Estudios
+#| label: firstact_lvl
+#| echo: false
+#| message: false
+
+ggplotly(g014) |> layout(legend = list(x = 0.70, y = 0.10))
+```
+
+```{r}
+#| fig-cap: Coincidencia del primer trabajo
+#| label: coincidentfirst
+#| echo: false
+#| message: false
+
+ggplotly(g015)
+```
+
+```{r}
+#| fig-cap: Coincidencia del primer trabajo por género
+#| label: coincidentfirstgdr
+#| echo: false
+#| message: false
+
+ggplotly(g016) |> layout(legend = list(x = 0.70, y = 0.10))
+```
+
+```{r}
+#| fig-cap: Coincidencia del primer trabajo por género
+#| label: coincidentfirstlvl
+#| echo: false
+#| message: false
+
+ggplotly(g017) |> layout(legend = list(x = 0.70, y = 0.10))
+```
+
+```{r}
+#| fig-cap: Tiempo en conseguir su primer trabajo
+#| label: timefirst
+#| echo: false
+#| message: false
+
+ggplotly(g018)
+```
+
+```{r}
+#| fig-cap: Tiempo en conseguir su primer trabajo por género
+#| label: timefirstgdr
+#| echo: false
+#| message: false
+
+ggplotly(g019) |> layout(legend = list(x = 0.70, y = 0.10))
+```
+
+```{r}
+#| fig-cap: Tiempo en conseguir su primer trabajo por Nivel de Estudios
+#| label: timefirstlvl
+#| echo: false
+#| message: false
+
+ggplotly(g020) |> layout(legend = list(x = 0.70, y = 0.10))
+```
+
+```{r}
+#| fig-cap: Primer país en trabajar
+#| label: firstcountry
+#| echo: false
+#| message: false
+
+
+
+ggplotly(g021)
+```
+
+```{r}
+#| fig-cap: Primer país en trabajar por género 
+#| label: firstcountrygdr
+#| echo: false
+#| message: false
+
+ggplotly(g022) |> layout(legend = list(x = 0.70, y = 0.10))
+```
+
+```{r}
+#| fig-cap: Primer país en trabajar por nivel de estudios
+#| label: firstcountrylvl
+#| echo: false
+#| message: false
+
+ggplotly(g023) |> layout(legend = list(x = 0.70, y = 0.10))
+```
+
+## ¿Dónde?
+
+```{r}
+#| echo: false
+#| message: false
+
+firstcountrywhat <- first_work |>
+  select(Gender, StudyLevel2, WhatCountryFirst) |>
+  drop_na()
+
+firstcountrywhat_all <- firstcountrywhat |>
+  group_by(WhatCountryFirst) |>
+  summarise(
+    N = n(),
+    Porcentaje = round(100*N/nrow(firstcountrywhat),2)
+  )
+
+g024 <-  firstcountrywhat_all |>
+  mutate(WhatCountryFirst = fct_reorder(WhatCountryFirst, N)) |>
+  ggplot(aes(x= WhatCountryFirst ,y = Porcentaje, fill = WhatCountryFirst) ) +
+  geom_bar(stat = "identity", position = "dodge") +
+  theme_apa() + 
+  labs(x = "", y = "Porcentaje (%)") +
+  theme(legend.position = "none") +
+  coord_flip()
+
+whatcountryfirst_gdr <- firstcountrywhat |>
+  group_by(WhatCountryFirst, Gender) |>
+  summarise(
+    N = n(),
+    Porcentaje = round(100*N/nrow(firstcountrywhat),2)
+  ) |>
+  ungroup()
+
+
+g025 <-  whatcountryfirst_gdr |>
+  mutate(WhatCountryFirst = fct_reorder(WhatCountryFirst, N)) |>
+  arrange(desc(N))
+
+g025 <- ggplot(whatcountryfirst_gdr,aes(x= WhatCountryFirst ,y = Porcentaje, fill = Gender) ) +
+  geom_bar(stat = "identity", position = "stack") +
+  theme_apa() + 
+  labs(x = "", y = "Porcentaje (%)") +
+  theme(legend.position = "bottom") +
+  scale_fill_discrete(name = "Género") +
+  coord_flip() 
+
+whatcountryfirst_lvl <- firstcountrywhat |>
+  group_by(StudyLevel2, WhatCountryFirst) |>
+  summarise(
+    N = n(),
+    Porcentaje = round(100*N/nrow(firstcountrywhat),2)
+  ) |>
+  ungroup()
+
+
+g026 <-  whatcountryfirst_lvl |>
+  mutate(WhatCountryFirst = fct_reorder(WhatCountryFirst, N)) |>
+  arrange(desc(N))
+
+g026 <- ggplot(whatcountryfirst_lvl,aes(x= WhatCountryFirst ,y = Porcentaje, fill = StudyLevel2) ) +
+  geom_bar(stat = "identity", position = "stack") +
+  theme_apa() + 
+  labs(x = "", y = "Porcentaje (%)") +
+  theme(legend.position = "bottom") +
+  scale_fill_discrete(name = "Nivel de Estudios") +
+  coord_flip()     
+
+```
+
+```{r}
+#| fig-cap: Otro país
+#| label: firstcountrywhat
+#| echo: false
+#| message: false
+
+
+
+ggplotly(g024)
+```
+
+```{r}
+#| fig-cap: Otro país por género 
+#| label: firstcountrywhatgdr
+#| echo: false
+#| message: false
+
+ggplotly(g025) |> layout(legend = list(x = 0.70, y = 0.95))
+```
+
+```{r}
+#| fig-cap: Otro país por nivel de estudios
+#| label: firstcountrywhatlvl
+#| echo: false
+#| message: false
+
+ggplotly(g026) |> layout(legend = list(x = 0.70, y = 0.95))
+```
